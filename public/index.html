@@ -173,14 +173,9 @@ button.ava{padding:0}
 .rulebox strong{font-size:clamp(1.4rem,3vw,2.1rem);letter-spacing:-.02em}
 .rulebox .letter{display:grid;place-items:center;width:1.7em;height:1.7em;border-radius:50%;background:var(--sun);color:var(--on-accent);border:3px solid var(--outline);box-shadow:0 4px 0 var(--shadow)}
 .spot{display:flex;align-items:center;gap:clamp(18px,3vw,40px);flex-wrap:wrap}
-.ringwrap{position:relative;width:clamp(150px,18vw,210px);aspect-ratio:1;flex:none}
-.ring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
-.ring circle{fill:none;stroke-width:13}
-.ring-bg{stroke:var(--stage-deep)}
-.ring-fg{stroke:var(--mint);stroke-linecap:round;transition:stroke .3s}
-.bigava{position:absolute;inset:15%;border-radius:50%;border:4px solid var(--outline);background:var(--c);display:grid;place-items:center;font-size:clamp(3.2rem,6vw,5rem);line-height:1;box-shadow:0 6px 0 var(--shadow)}
+.avawrap{position:relative;width:clamp(130px,15vw,180px);aspect-ratio:1;flex:none}
+.bigava{position:absolute;inset:0;border-radius:50%;border:4px solid var(--outline);background:var(--c);display:grid;place-items:center;font-size:clamp(3.2rem,6vw,5rem);line-height:1;box-shadow:0 6px 0 var(--shadow)}
 .sec{position:absolute;right:-6px;bottom:-4px;min-width:2.3em;height:2.3em;padding:0 .4em;border-radius:999px;background:var(--card);color:var(--text);border:3px solid var(--outline);display:grid;place-items:center;font-weight:800;font-size:1.15rem;font-variant-numeric:tabular-nums;box-shadow:0 4px 0 var(--shadow)}
-.ringwrap.hurry .sec{background:var(--danger);color:#fff;animation:throb .5s ease-in-out infinite}
 .spot-text{flex:1;min-width:240px}
 .upnow{color:var(--on-stage-muted);font-weight:600;font-size:clamp(1rem,1.6vw,1.2rem)}
 .pname{font-size:clamp(2.8rem,7vw,5.6rem);font-weight:800;letter-spacing:-.04em;font-stretch:82%;line-height:.95;margin:.08em 0 .14em;word-break:break-word}
@@ -311,8 +306,6 @@ button.ava{padding:0}
 .status.soon{background:var(--sun);color:var(--on-accent)}
 .status .big{font-size:clamp(2.2rem,9vw,3.2rem);font-weight:800;letter-spacing:-.03em;line-height:1;margin:6px 0}
 .status .ava{margin:0 auto;width:72px;height:72px;font-size:2.4rem}
-.tbar{height:12px;border-radius:999px;background:var(--card-2);border:2px solid var(--outline);overflow:hidden;margin-top:14px}
-.tbar i{display:block;height:100%;background:var(--mint);width:100%}
 .mystats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .mystats .stat{background:var(--card);color:var(--text);text-align:center}
 .mystats .stat b{font-size:2rem}
@@ -369,7 +362,7 @@ const PENALTIES = [
   'Strike a superhero pose until your next turn 💪'
 ];
 const REASONS = [
-  {id:'missed', label:'Missed a word'}, {id:'order', label:'Wrong order'}, {id:'slow', label:'Too slow'},
+  {id:'missed', label:'Missed a word'}, {id:'order', label:'Wrong order'}, {id:'slow', label:'Got stuck'},
   {id:'repeat', label:'Repeated a word'}, {id:'nonew', label:'No new word'}, {id:'rule', label:'Broke the round rule'}
 ];
 const COLORS = ['#FF4F9A','#FFD23F','#2FD38A','#4FC3FF','#FF8A3D','#B57BFF','#FF6B6B','#00C9B7','#F9A8D4','#A3E35B','#FFB4A2','#7CC6FE'];
@@ -498,7 +491,7 @@ function toast(html, actions = [], ms = 7000){
   $('#toasts').appendChild(el); setTimeout(()=> el.remove(), ms);
 }
 function floatPts(txt, neg){
-  const r = document.querySelector('.ringwrap')?.getBoundingClientRect(); if (!r) return;
+  const r = document.querySelector('.avawrap')?.getBoundingClientRect(); if (!r) return;
   const el = document.createElement('div'); el.className = 'float-pts'+(neg?' neg':''); el.textContent = txt;
   el.style.left = (r.left + r.width*.62)+'px'; el.style.top = (r.top + 10)+'px';
   document.body.appendChild(el); setTimeout(()=>el.remove(), 1200);
@@ -750,8 +743,6 @@ function renderSetup(){
       </ul>
       <div class="settings">
         <label>Round length<select data-set="roundMin">${[3,4,5,6,8,10].map(v=>`<option value="${v}" ${S.settings.roundMin==v?'selected':''}>${v} minutes</option>`).join('')}</select></label>
-        <label>Starting think time<select data-set="base">${[4,5,6,8,10].map(v=>`<option value="${v}" ${S.settings.base==v?'selected':''}>${v} seconds</option>`).join('')}</select></label>
-        <label>Extra time per word<select data-set="perWord">${[1,1.5,2,2.5].map(v=>`<option value="${v}" ${S.settings.perWord==v?'selected':''}>+${v} s per word</option>`).join('')}</select></label>
         <label>Strikes to become judge<select data-set="strikeLimit">${[2,3,4,5].map(v=>`<option value="${v}" ${S.settings.strikeLimit==v?'selected':''}>${v} strikes</option>`).join('')}</select></label>
       </div>
     </section>
@@ -825,10 +816,9 @@ function renderPlay(){
     <section class="stage">
       <div class="rulebox">${rule}</div>
       <div class="spot">
-        <div class="ringwrap" id="ringWrap">
-          <svg class="ring" viewBox="0 0 200 200" aria-hidden="true"><circle class="ring-bg" cx="100" cy="100" r="90"/><circle class="ring-fg" id="ringFg" cx="100" cy="100" r="90" stroke-dasharray="565.5" stroke-dashoffset="0"/></svg>
+        <div class="avawrap">
           <span class="bigava" style="--c:${p.color}">${p.emoji}</span>
-          <span class="sec" id="turnSec" aria-label="Seconds left">${turnLimit()}</span>
+          <span class="sec" aria-hidden="true">🎤</span>
         </div>
         <div class="spot-text">
           <div class="upnow">${len ? `Say all ${len} word${len>1?'s':''}, then add one` : 'Start a fresh chain with any word'}</div>
@@ -922,30 +912,14 @@ let lastTickSec = null;
 function updateTimers(force){
   if (S.phase !== 'play' || MODE !== 'host') return;
   const now = Date.now();
-  const lim = turnLimit()*1000;
-  const left = S.paused ? S.pTurn : Math.max(0, S.turnEndsAt - now);
-  const frac = Math.max(0, Math.min(1, left / lim));
-  const fg = $('#ringFg'), sec = $('#turnSec'), wrap = $('#ringWrap');
-  if (fg){
-    fg.setAttribute('stroke-dashoffset', String(565.5 * (1 - frac)));
-    fg.style.stroke = frac > .5 ? 'var(--mint)' : frac > .25 ? 'var(--sun)' : 'var(--danger)';
-  }
-  const s = Math.ceil(left/1000);
-  if (sec) sec.textContent = s;
-  if (wrap) wrap.classList.toggle('hurry', s <= 3 && !S.paused);
-  if (!S.paused && !modalOpen && s <= 3 && s > 0 && s !== lastTickSec){ SFX.tick(); }
-  lastTickSec = s;
   const rc = $('#roundClock');
   if (S.roundEndsAt && !S.roundOver){
     const rl = S.paused ? S.pRound : S.roundEndsAt - now;
     if (rc) rc.textContent = '⏱ ' + fmt(rl);
     if (!S.paused && rl <= 0){ S.roundOver = true; save(); if (rc){ rc.textContent = 'Last turn!'; rc.classList.add('over'); } flash('⏰ Time!', 'Finish this turn. It’s the last one of the round'); }
   }
-  if (!S.paused && !modalOpen && left <= 0 && !S.timeoutFired){
-    S.timeoutFired = true; SFX.strike(); openStrike('slow');
-  }
 }
-function loop(){ updateTimers(); updatePlayerTimer(); requestAnimationFrame(loop); }
+function loop(){ updateTimers(); requestAnimationFrame(loop); }
 
 /* ================= modals ================= */
 function openModal(html){ $('#modal').innerHTML = html; $('#modalBg').classList.add('open'); modalOpen = true; setTimeout(()=> $('#modal').querySelector('button')?.focus(), 30); }
@@ -1003,7 +977,7 @@ function openHowto(){
     <ol>
       <li>On your turn, say every word in the chain <b>in order</b>, then add <b>one new word</b>.</li>
       <li>The host types the new word and taps <b>Nailed it</b>. The chain stays hidden on screen, so it’s all memory.</li>
-      <li>Missed word, wrong order, a repeat, or too slow? The host taps <b>Strike</b>. The chain snaps and you start a fresh one.</li>
+      <li>Missed word, wrong order, a repeat, or got stuck? The host taps <b>Strike</b>. The chain snaps and you start a fresh one.</li>
     </ol>
     <h3>Scoring</h3>
     <p>+1 per successful turn, +2 once the chain hits 10. A strike is −2. Spotting a mistake first is +1. After ${S.settings.strikeLimit} strikes in a round you become a <b>Chain Judge</b>: you sit out turns but can still earn catch points.</p>
@@ -1245,13 +1219,12 @@ async function hostConnect(){
 }
 function compactState(){
   const rd = curRound();
-  const left = S.phase === 'play' ? (S.paused ? S.pTurn : Math.max(0, S.turnEndsAt - Date.now())) : 0;
   let words = S.chain.map(c => [c.w.slice(0,30), (c.g||'').slice(0,24)]);
   const g = {
     ph:S.phase, rn: rd ? rd.name : '', ri:S.ri, rt:S.roundList.length, ic: rd ? rd.icon : '', rid: rd ? rd.id : '',
     th: rd && rd.id === 'theme' ? S.theme : '', cur: S.phase==='play' ? (curPlayer()?.id || null) : null,
     nxt: S.phase==='play' ? (nextPlayer()?.id || null) : null, cl:S.chain.length, rec:S.record.len,
-    tl: Math.round(left/100)/10, tm: turnLimit(), pz: S.paused ? 1 : 0, fin: S.finalists, champ: S.champion,
+    pz: S.paused ? 1 : 0, fin: S.finalists, champ: S.champion,
     pl: S.players.map(p => [p.id, p.name, p.emoji, p.color, p.score||0, p.rs||0, p.judge?1:0, p.out?1:0, p.card||'', p.cardUsed?1:0, p.ts||0]),
     ev: S.ev, w: words
   };
@@ -1262,7 +1235,7 @@ function broadcast(){
   if (!hostRoom || MODE !== 'host') return;
   hostRoom.presence({role:'host', code:S.code, g:compactState()}).catch(()=>{});
 }
-setInterval(() => { if (hostRoom && S.phase === 'play' && !S.paused) broadcast(); }, 1000);
+setInterval(() => { if (hostRoom && S.phase !== 'setup') broadcast(); }, 10000);
 
 function onHostPeers(ch){
   const conn = {};
@@ -1322,7 +1295,7 @@ function onPlayerPeers(ch){
       PL.lastEv = ev.id;
     }
   }
-  const key = JSON.stringify([PL.status, PL.pid, PL.H && {...PL.H, tl:0}]);
+  const key = JSON.stringify([PL.status, PL.pid, PL.H]);
   if (key !== PL.key){
     const wasMine = PL.wasMine; PL.key = key;
     const mine = PL.H && PL.pid && PL.H.cur === PL.pid;
@@ -1332,13 +1305,6 @@ function onPlayerPeers(ch){
   }
 }
 function renderPlayerNow(){ if (MODE === 'player') $('#app').innerHTML = header() + renderPlayer(); }
-function updatePlayerTimer(){
-  if (MODE !== 'player' || !PL.H) return;
-  const bar = $('#pBar'); if (!bar) return;
-  const left = PL.H.pz ? PL.H.tl : Math.max(0, PL.H.tl - (Date.now() - PL.hostAt)/1000);
-  bar.style.width = Math.max(0, Math.min(100, left / (PL.H.tm || 1) * 100)) + '%';
-  bar.style.background = left / (PL.H.tm||1) > .5 ? 'var(--mint)' : left / (PL.H.tm||1) > .25 ? 'var(--sun)' : 'var(--danger)';
-}
 function renderPlayer(){
   const H = PL.H;
   if (!H){
@@ -1363,7 +1329,7 @@ function renderPlayer(){
     return `<div class="phone">
       <section class="panel pad status"><div class="muted">${roundLine}</div><div class="big">🔑 Chain Keeper</div>
       ${cur ? `<p>${esc(cur.emoji)} <b>${esc(cur.name)}</b> is reciting ${H.cl} word${H.cl===1?'':'s'}</p>` : `<p>${phaseMsg || ''}</p>`}
-      <div class="tbar"><i id="pBar"></i></div></section>
+      </section>
       <section class="panel pad"><h2 style="font-size:1.2rem">The chain</h2>
       ${H.wo ? `<p class="muted">${H.wo} earlier words not shown</p>` : ''}
       ${ws.length ? `<ol class="keeper-list" style="counter-reset:w ${H.wo||0}">${ws.map((w,i) => `<li class="${i===ws.length-1?'last':''}">${esc(w[0])}${w[1] ? ` <span class="g">(${esc(w[1])})</span>` : ''}</li>`).join('')}</ol>` : '<p class="muted">No words yet. A fresh chain is starting.</p>'}
@@ -1377,12 +1343,12 @@ function renderPlayer(){
   const mine = H.ph === 'play' && H.cur === me.id, soon = H.ph === 'play' && H.nxt === me.id;
   let status;
   if (H.ph !== 'play') status = `<section class="panel pad status"><div class="muted">${roundLine}</div><div class="big">${H.ph==='awards' && H.champ===me.id ? '👑 You’re the champion!' : esc(me.emoji)}</div><p>${phaseMsg || ''}</p></section>`;
-  else if (mine) status = `<section class="panel pad status mine"><div>${roundLine}</div><div class="big">Your turn! 🎤</div><p>Say all <b>${H.cl}</b> word${H.cl===1?'':'s'}, then add one.</p><div class="tbar"><i id="pBar"></i></div></section>`;
+  else if (mine) status = `<section class="panel pad status mine"><div>${roundLine}</div><div class="big">Your turn! 🎤</div><p>Say all <b>${H.cl}</b> word${H.cl===1?'':'s'}, then add one.</p></section>`;
   else status = `<section class="panel pad status ${soon?'soon':''}"><div class="muted" ${soon?'style="color:inherit"':''}>${roundLine}</div>
     ${cur ? `<span class="ava" style="--c:${esc(cur.color)}">${esc(cur.emoji)}</span><div class="big">${esc(cur.name)}</div><p>is up with <b>${H.cl}</b> word${H.cl===1?'':'s'} to recite</p>` : ''}
     ${soon ? '<p><b>You’re next. Get ready!</b></p>' : ''}
     ${(fin && me.out) ? '<p><b>You’re out of the finale. Cheer them on!</b></p>' : me.judge ? '<p><b>⚖️ You’re a Chain Judge this round. Listen for mistakes!</b></p>' : ''}
-    <div class="tbar"><i id="pBar"></i></div></section>`;
+    </section>`;
   const c = CARDS[me.card];
   const canBuzz = H.ph === 'play' && !mine;
   return `<div class="phone">
