@@ -122,7 +122,7 @@ img{max-width:100%}
 .addrow input{flex:1;min-width:0}
 .field{width:100%;padding:.75em 1em;border:3px solid var(--outline);border-radius:14px;background:var(--card-2);color:var(--text);font-size:1.05rem}
 .field::placeholder{color:var(--muted)}
-.roster{list-style:none;margin:16px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.roster{list-style:none;margin:16px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:10px}
 .roster li{display:flex;align-items:center;gap:10px;background:var(--card-2);border:3px solid var(--outline);border-radius:999px;padding:5px 8px 5px 5px}
 .roster .nm{flex:1;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ava{width:44px;height:44px;flex:none;border-radius:50%;border:3px solid var(--outline);background:var(--c,#FFD23F);display:grid;place-items:center;font-size:1.4rem;position:relative;line-height:1}
@@ -361,6 +361,140 @@ details.manual .addrow{margin-top:10px}
 .pick-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
 .pick-grid button{display:flex;align-items:center;gap:10px;padding:8px;border-radius:16px;border:3px solid var(--outline);background:var(--card-2);color:var(--text);font-weight:750;text-align:left}
 
+/* ================= extra game-show polish ================= */
+:root{ --beam1:rgba(255,255,255,.16); --beam2:rgba(255,79,154,.18); --rays:rgba(255,210,63,.32); }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --beam1:rgba(255,255,255,.07); --beam2:rgba(255,79,154,.12); --rays:rgba(255,210,63,.2); } }
+:root[data-theme="dark"]{ --beam1:rgba(255,255,255,.07); --beam2:rgba(255,79,154,.12); --rays:rgba(255,210,63,.2); }
+body::before{content:"";position:fixed;inset:-25%;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 22% 60% at 28% 0%, var(--beam1), transparent 70%),radial-gradient(ellipse 22% 60% at 72% 0%, var(--beam2), transparent 70%);
+  animation:beams 12s ease-in-out infinite alternate}
+@keyframes beams{from{transform:rotate(-5deg) translateX(-4%)}to{transform:rotate(5deg) translateX(4%)}}
+#app{position:relative;z-index:1}
+.floaties{position:fixed;inset:0;pointer-events:none;z-index:-1;overflow:hidden}
+.floaties span{position:absolute;left:var(--x);bottom:-70px;font-size:clamp(1.4rem,2.4vw,2.2rem);opacity:.32;animation:drift var(--d) linear infinite;animation-delay:var(--del)}
+@keyframes drift{from{transform:translateY(0) rotate(0)}to{transform:translateY(-125vh) rotate(360deg)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* mascot */
+.mascot{display:inline-block;width:var(--ms,110px);line-height:0;vertical-align:middle}
+.mascot svg{width:100%;height:auto;overflow:visible;display:block}
+.m-back-o{fill:none;stroke:var(--outline);stroke-width:15}
+.m-back{fill:none;stroke:var(--pop);stroke-width:8}
+.m-front{fill:var(--sun);stroke:var(--outline);stroke-width:4.5}
+.m-eye{fill:#17134A;transform-box:fill-box;transform-origin:center;animation:blink 4.2s infinite}
+.m-eye + .m-eye{animation-delay:.03s}
+@keyframes blink{0%,91%,100%{transform:scaleY(1)}94%{transform:scaleY(.1)}}
+.m-shine{fill:#fff}
+.m-cheek{fill:#FF4F9A;opacity:.55}
+.m-mouth{display:none;fill:none;stroke:#17134A;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.m-grin,.m-wow{fill:#17134A}
+.mascot[data-mood="idle"] .m-smile,.mascot[data-mood="happy"] .m-grin,.mascot[data-mood="wow"] .m-wow,.mascot[data-mood="sad"] .m-sad{display:inline}
+.mascot .m-body{transform-box:view-box;transform-origin:45px 96px;animation:mbob 2.4s ease-in-out infinite}
+.mascot[data-mood="happy"] .m-body{animation:mjump .62s cubic-bezier(.3,1.6,.5,1) 3,mbob 2.4s ease-in-out 1.9s infinite}
+.mascot[data-mood="wow"] .m-body{animation:mjump .62s cubic-bezier(.3,1.6,.5,1) 2,mbob 2.4s ease-in-out 1.3s infinite}
+.mascot[data-mood="sad"] .m-body{animation:mshake .45s ease-in-out 3,mbob 2.4s ease-in-out 1.4s infinite}
+@keyframes mbob{0%,100%{transform:translateY(0) scale(1,1)}50%{transform:translateY(-5px) scale(1.02,.98)}}
+@keyframes mjump{0%{transform:translateY(0) scale(1.12,.88)}40%{transform:translateY(-24px) scale(.94,1.06) rotate(-7deg)}75%{transform:translateY(0) scale(1.08,.92)}100%{transform:none}}
+@keyframes mshake{0%,100%{transform:none}25%{transform:translateX(-7px) rotate(-7deg)}75%{transform:translateX(7px) rotate(7deg)}}
+.mascot-wrap{display:flex;align-items:center;gap:10px;position:relative}
+.meter .mascot{--ms:96px}
+.bubble{position:relative;background:var(--card);color:var(--text);border:3px solid var(--outline);border-radius:16px;padding:.35em .8em;font-weight:800;box-shadow:0 4px 0 var(--shadow);opacity:0;transform:scale(.6) translateX(10px);transition:opacity .2s, transform .3s cubic-bezier(.3,1.6,.5,1);white-space:nowrap}
+.bubble.show{opacity:1;transform:none}
+.bubble::after{content:"";position:absolute;right:-11px;top:50%;width:14px;height:14px;background:var(--card);border-right:3px solid var(--outline);border-top:3px solid var(--outline);transform:translateY(-50%) rotate(45deg)}
+.hero-mascot{display:flex;justify-content:center;margin-bottom:6px}
+.hero-mascot .mascot{--ms:clamp(90px,11vw,130px)}
+
+/* spotlight rays */
+.avawrap{isolation:isolate}
+.avawrap::before{content:"";position:absolute;inset:-34%;border-radius:50%;z-index:-1;
+  background:repeating-conic-gradient(var(--rays) 0deg 9deg, transparent 9deg 18deg);
+  -webkit-mask:radial-gradient(circle, #000 30%, transparent 68%);mask:radial-gradient(circle, #000 30%, transparent 68%);
+  animation:spin 22s linear infinite}
+.bigava{animation:avabob 2.6s ease-in-out infinite}
+@keyframes avabob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-7px) rotate(2deg)}}
+.sec{z-index:2;animation:throb 1.8s ease-in-out infinite}
+.pname{animation:namepop .55s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes namepop{from{transform:translateY(18px) scale(.85);opacity:0}}
+.upnow,.next{animation:fadeup .5s ease-out both}
+.next{animation-delay:.12s}
+@keyframes fadeup{from{transform:translateY(8px);opacity:0}}
+
+/* chain shimmer + sparks */
+.chainrow .link{overflow:hidden}
+.chainrow .link::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.6) 50%,transparent 70%);transform:translateX(-130%);animation:shine 3.4s ease-in-out infinite;animation-delay:calc(var(--i,0) * .12s);pointer-events:none}
+@keyframes shine{0%,62%{transform:translateX(-130%)}100%{transform:translateX(130%)}}
+.spark{position:fixed;z-index:85;pointer-events:none;font-size:20px;font-weight:800;transform:translate(-50%,-50%);animation:spark .8s cubic-bezier(.2,.8,.3,1) forwards;text-shadow:0 2px 0 rgba(0,0,0,.25)}
+@keyframes spark{to{transform:translate(calc(-50% + var(--tx)),calc(-50% + var(--ty))) scale(.2) rotate(200deg);opacity:0}}
+.shake{animation:shake .5s cubic-bezier(.36,.07,.19,.97)}
+@keyframes shake{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(5px)}30%,50%,70%{transform:translateX(-9px)}40%,60%{transform:translateX(9px)}}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:44;box-shadow:inset 0 0 180px 50px rgba(255,60,60,.65);animation:vig .9s ease-out forwards}
+@keyframes vig{from{opacity:1}to{opacity:0}}
+
+/* buttons */
+.btn{position:relative;overflow:hidden;isolation:isolate}
+.btn::after{content:"";position:absolute;top:0;bottom:0;left:-70%;width:45%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.5),transparent);transform:skewX(-20deg);transition:left .6s ease;pointer-events:none;z-index:1}
+.btn:hover:not(:disabled)::after{left:135%}
+.btn.huge:not(:disabled){animation:breathe 2.4s ease-in-out infinite}
+.btn.huge:active{animation:none}
+@keyframes breathe{50%{transform:scale(1.04)}}
+.btn.mint.big:hover:not(:disabled),.btn.danger.big:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 7px 0 var(--shadow)}
+
+/* rail + drag & drop */
+.chip.cur{animation:glow 1.6s ease-in-out infinite}
+.chip.cur .ava{animation:avabob 1.8s ease-in-out infinite}
+@keyframes glow{50%{box-shadow:0 4px 0 var(--shadow),0 0 0 7px rgba(255,210,63,.35)}}
+.score.up{animation:bumpup .8s ease-out}
+.score.down{animation:bumpdown .8s ease-out}
+@keyframes bumpup{30%{transform:scale(1.7);color:#2FD38A}}
+@keyframes bumpdown{30%{transform:scale(1.5) rotate(-8deg);color:#FF5A4E}}
+.grip{flex:none;width:22px;height:36px;border:none;border-radius:8px;padding:0;cursor:grab;touch-action:none;
+  background-color:transparent;background-image:radial-gradient(circle, currentColor 1.7px, transparent 2.1px);background-size:8px 8px;background-position:3px 2px;
+  color:var(--muted);opacity:.75;transition:opacity .15s, background-color .15s}
+.grip:hover,.grip:focus-visible{opacity:1;background-color:rgba(127,127,160,.16)}
+.chip.cur .grip{color:var(--on-accent)}
+.dragging{z-index:95!important;cursor:grabbing;pointer-events:none;background:var(--card)!important;color:var(--text)!important;border-color:var(--outline)!important;
+  box-shadow:0 12px 0 var(--shadow),0 22px 40px rgba(0,0,0,.35)!important;transform:rotate(-2deg) scale(1.05)!important;animation:none!important;transition:none!important}
+.drop-ph{list-style:none;border:3px dashed var(--muted);border-radius:18px;background:rgba(127,127,160,.08);animation:phpulse 1s ease-in-out infinite}
+@keyframes phpulse{50%{background:rgba(127,127,160,.18)}}
+body.is-dragging{cursor:grabbing;user-select:none;-webkit-user-select:none}
+.rail-head{flex-wrap:wrap}
+
+/* screens */
+.intro-card{animation:cardin .55s cubic-bezier(.3,1.4,.5,1) both}
+@keyframes cardin{from{transform:translateY(30px) scale(.92);opacity:0}}
+.intro-icon{display:inline-block;position:relative;isolation:isolate;animation:iconpop .7s cubic-bezier(.3,1.7,.5,1) both,iconbob 2.6s ease-in-out .7s infinite}
+.intro-icon::before{content:"";position:absolute;inset:-70%;z-index:-1;border-radius:50%;background:repeating-conic-gradient(var(--rays) 0deg 9deg, transparent 9deg 18deg);-webkit-mask:radial-gradient(circle,#000 25%,transparent 66%);mask:radial-gradient(circle,#000 25%,transparent 66%);animation:spin 20s linear infinite}
+@keyframes iconpop{from{transform:scale(0) rotate(-30deg)}}
+@keyframes iconbob{50%{transform:translateY(-8px) rotate(4deg)}}
+.titlechain .link{transform-origin:50% 0;animation:swing 2.8s ease-in-out infinite alternate}
+.titlechain .link.c1{animation-delay:-1.4s}
+@keyframes swing{from{transform:rotate(-1.6deg)}to{transform:rotate(1.6deg)}}
+.board li{animation:rowin .45s cubic-bezier(.3,1.3,.5,1) both;animation-delay:calc(var(--i,0) * 70ms)}
+@keyframes rowin{from{transform:translateX(-24px);opacity:0}}
+.board .bar{transform-origin:left;animation:grow 1s cubic-bezier(.2,.9,.3,1) both;animation-delay:calc(var(--i,0) * 70ms + .2s)}
+@keyframes grow{from{transform:scaleX(0)}}
+.hoppers{display:flex;gap:6px;font-size:1.6rem}
+.hoppers span{animation:hop 1.2s ease-in-out infinite}
+.hoppers span:nth-child(2){animation-delay:.15s}.hoppers span:nth-child(3){animation-delay:.3s}.hoppers span:nth-child(4){animation-delay:.45s}
+@keyframes hop{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-12px) rotate(-10deg)}}
+.waiting{flex-wrap:wrap}
+.waiting .mascot{--ms:84px}
+.champ{position:relative;overflow:hidden;isolation:isolate;padding-top:44px!important}
+.champ::before{content:"";position:absolute;left:50%;top:50%;width:1400px;height:1400px;margin:-700px 0 0 -700px;z-index:-1;background:repeating-conic-gradient(rgba(255,255,255,.35) 0deg 8deg, transparent 8deg 16deg);animation:spin 30s linear infinite}
+.champ-ava{position:relative;display:inline-block}
+.champ-ava .crown{position:absolute;left:50%;top:-30px;z-index:2;font-size:2.6rem;transform:translateX(-50%);animation:crown 1.6s ease-in-out infinite}
+@keyframes crown{50%{transform:translateX(-50%) translateY(-8px) rotate(8deg)}}
+.award .ic{display:inline-block;animation:iconbob 2.8s ease-in-out infinite}
+.awards-title .mascot{--ms:120px;margin-bottom:6px}
+#flash .fl{position:relative;isolation:isolate;overflow:visible}
+#flash .fl::before{content:"";position:absolute;inset:-60% -30%;z-index:-1;background:repeating-conic-gradient(rgba(255,210,63,.45) 0deg 8deg, transparent 8deg 16deg);-webkit-mask:radial-gradient(closest-side,#000 40%,transparent);mask:radial-gradient(closest-side,#000 40%,transparent);animation:spin 6s linear infinite}
+.status.mine{position:relative;overflow:hidden;isolation:isolate}
+.status.mine::before{content:"";position:absolute;left:50%;top:50%;width:900px;height:900px;margin:-450px 0 0 -450px;z-index:-1;background:repeating-conic-gradient(rgba(255,255,255,.3) 0deg 9deg, transparent 9deg 18deg);animation:spin 14s linear infinite}
+.status .mascot{--ms:96px;margin:0 auto 6px}
+@media (prefers-reduced-motion: reduce){ .floaties{display:none} body::before{animation:none} }
+
+.plist .chip.joined{animation:popin .45s cubic-bezier(.3,1.6,.5,1)}
+.roster li .grip{margin-left:-2px}
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition:none!important}
 }
@@ -624,14 +758,15 @@ function success(force = false){
   p.score += pts; p.succ++;
   S.rstats.words++; S.rstats.longest = Math.max(S.rstats.longest, len);
   newLinkIndex = len - 1;
-  SFX.ok(); floatPts('+'+pts);
+  SFX.ok(); floatPts('+'+pts); cheer('happy', len >= 5 && len % 5 === 0 ? hypeText(len) : rand(OK_LINES));
   if (len > S.record.len){
     S.record = {len, round: rd.name};
-    if (len >= 4 && !S.beatRecord){ S.beatRecord = true; setTimeout(()=>{ flash('New team record! 🏆', `${len} links and counting`); confetti(120); SFX.fanfare(); }, 250); }
+    if (len >= 4 && !S.beatRecord){ S.beatRecord = true; cheer('wow', 'New record! 🏆', 2200); setTimeout(()=>{ flash('New team record! 🏆', `${len} links and counting`); confetti(120); SFX.fanfare(); }, 250); }
   } else if ([5,10,15,20,25,30].includes(len)){ setTimeout(()=> flash(hypeText(len)), 200); }
   setEv('ok', `${p.name} added a word (+${pts}). Chain: ${len}`);
   draft = ''; draftG = '';
   advance();
+  requestAnimationFrame(() => sparkle(document.querySelector('#chainRow .link.new')));
 }
 function applyStrike(reasonId, catcherId){
   snapshot();
@@ -643,7 +778,7 @@ function applyStrike(reasonId, catcherId){
   const c = catcherId && byId(catcherId);
   if (c){ c.score += 1; c.catches++; }
   S.chain = []; S.beatRecord = false; newLinkIndex = -1;
-  SFX.strike();
+  SFX.strike(); fxStrike(); cheer('sad', rand(STRIKE_LINES), 2600);
   const reason = REASONS.find(r => r.id === reasonId)?.label || 'Mistake';
   setEv('strike', `${p.name} snapped the chain at ${len}. ${reason}.`);
   if (fin && eligibleCount() <= 1){
@@ -789,8 +924,9 @@ function renderHome(){
       <p class="hint grow">Open this on the laptop or projector everyone can see. You’ll get a room code and an invite link to share with the team.</p>
       <button class="btn pop big" data-act="createRoom">Create a room</button>
     </section>`;
-  return `
+  return `${floaties()}
   <section class="hero ${invited ? 'compact' : ''}">
+    <div class="hero-mascot">${mascot('happy')}</div>
     <div class="titlechain" aria-label="Chain Reaction"><span class="link">Chain</span><span class="joint"></span><span class="link c1">Reaction</span></div>
     <p>${invited ? 'You’ve been invited to play! Add your name to join.' : 'One host runs the big screen. Everyone else joins on their phone with the <strong>room code</strong>.'}</p>
   </section>
@@ -801,11 +937,11 @@ function renderHome(){
 function rosterHtml(){
   const n = S.players.length;
   const keeper = keeperCount ? `<span class="muted">🔑 Chain Keeper connected</span>` : '';
-  if (!n) return `<div class="waiting" aria-live="polite"><i></i><i></i><i></i>Waiting for players to join…</div>${keeper}`;
+  if (!n) return `<div class="waiting" aria-live="polite">${mascot('idle')}<div><div class="hoppers" aria-hidden="true"><span>🦊</span><span>🐼</span><span>🐙</span><span>🦄</span></div>Waiting for players to join…</div></div>${keeper}`;
   const note = n < 7 ? `${n} player${n>1?'s':''} in. 7 to 10 is the sweet spot.` : n <= 10 ? `${n} players. Perfect.` : `${n} players. A big chain gang, turns will take longer.`;
-  const html = `<ul class="roster">${S.players.map(p => `<li class="${p.id===lastJoined?'joined':''}">
-      <span class="ava" style="--c:${p.color}">${p.emoji}</span>
-      <span class="nm"><span>${esc(p.name)}</span><span class="st">${p.manual ? 'No phone' : phoneConn[p.id] ? '🟢 Connected' : '⚪ Offline'}</span></span>
+  const html = `<ul class="roster">${S.players.map(p => `<li class="${p.id===lastJoined?'joined':''}" data-pid="${p.id}">
+      ${grip(p.name)}<span class="ava" style="--c:${p.color}">${p.emoji}</span>
+      <span class="nm"><span>${esc(p.name)}</span><span class="st">${p.manual ? 'No phone' : phoneConn[p.id] ? '🟢 Online' : '⚪ Offline'}</span></span>
       <button class="x" data-act="removePlayer" data-id="${p.id}" aria-label="Remove ${esc(p.name)}">✕</button></li>`).join('')}</ul>
     <div class="lobby-tools"><span class="count-note ${n>=7&&n<=10?'ok':''}" style="margin:0">${note}</span>${n>1 ? `<button class="btn ghost sm" data-act="shuffle">🔀 Shuffle order</button>` : ''}${keeper}</div>`;
   lastJoined = null;
@@ -816,7 +952,7 @@ function startHtml(){
   return `<button class="btn pop huge" data-act="start" ${n<2?'disabled':''}>${n<2 ? 'Waiting for at least 2 players' : `Start the game with ${n} players`}</button>`;
 }
 function softLobby(){
-  if (MODE !== 'host' || S.phase !== 'lobby') return;
+  if (MODE !== 'host' || S.phase !== 'lobby' || drag) return;
   const r = $('#rosterBox'); if (r) r.innerHTML = rosterHtml();
   const s = $('#startBox'); if (s) s.innerHTML = startHtml();
   const c = $('#connCount'); if (c) c.textContent = Object.keys(phoneConn).length;
@@ -824,7 +960,7 @@ function softLobby(){
 function renderLobby(){
   const url = joinUrl(), svg = qrSvg(url);
   const status = hostRoom ? '' : `<p class="err" style="justify-content:center">${roomTried ? 'Can’t reach the game server, so phones can’t join right now. Refresh to try again, or add players by hand.' : 'Opening the room…'}</p>`;
-  return `<div class="lobby-grid">
+  return `${floaties()}<div class="lobby-grid">
     <section class="panel invite">
       <h2>Join on your phone</h2>
       ${svg ? `<div class="qrwrap" aria-label="QR code to join this room">${svg}</div><p class="muted">Scan with your phone camera, or open <b>${esc(location.host || 'this page')}</b> and enter</p>` : `<p class="muted">Open <b>${esc(location.host || 'this page')}</b> on your phone and enter</p>`}
@@ -835,7 +971,7 @@ function renderLobby(){
     <div class="lobby-side">
       <section class="panel pad">
         <h2>Players in the room</h2>
-        <p class="hint">They appear here as they join. Play goes in this order.</p>
+        <p class="hint">They pop in as they join. Drag ⠿ to change the turn order.</p>
         <div id="rosterBox">${rosterHtml()}</div>
         <details class="manual"><summary>Add someone without a phone</summary>
           <div class="addrow"><input class="field" id="manualIn" maxlength="20" placeholder="Their name" autocomplete="off" aria-label="Name"><button class="btn pop" data-act="addPlayer">Add</button></div>
@@ -880,16 +1016,17 @@ function chip(p, i){
   const card = CARDS[p.card] || CARDS.skip;
   const dots = Array.from({length:S.settings.strikeLimit}, (_,k) => `<span class="dot ${k<p.rs?'on':''}"></span>`).join('');
   const meta = fin ? (p.out ? '💥 Out' : !S.finalists.includes(p.id) ? 'Cheering' : '👑 Finalist') : p.judge ? '⚖️ Chain Judge' : dots;
-  return `<li class="chip ${isCur?'cur':''} ${inactive?'inactive':''}">
+  return `<li class="chip ${isCur?'cur':''} ${inactive?'inactive':''}" data-pid="${p.id}">
+    ${MODE === 'host' ? grip(p.name) : ''}
     <span class="ava" style="--c:${p.color}">${p.emoji}${phoneConn[p.id]?'<span class="ph" title="Phone connected">📱</span>':''}</span>
     <span class="who"><span class="nm">${esc(p.name)}</span><span class="meta" aria-label="${p.rs} strikes">${meta}</span></span>
     <button class="cardbtn ${p.cardUsed?'used':''}" data-act="card" data-id="${p.id}" aria-label="${esc(p.name)}’s ${card.name} card${p.cardUsed?', used':''}">${card.icon}</button>
-    <span class="score">${p.score}</span>
+    <span class="score ${scoreClass(p)}">${p.score}</span>
   </li>`;
 }
 function chainTiles(words, revealAll){
   if (!words.length) return `<span class="empty-link">Start a fresh chain: any word goes</span>`;
-  return words.map((c,i) => `${i?'<span class="joint"></span>':''}<span class="link c${i%4} ${i===newLinkIndex?'new':''}"><span class="n">${i+1}</span><span class="w">${esc(c.w)}</span></span>`).join('');
+  return words.map((c,i) => `${i?'<span class="joint"></span>':''}<span class="link c${i%4} ${i===newLinkIndex?'new':''}" style="--i:${i}"><span class="n">${i+1}</span><span class="w">${esc(c.w)}</span></span>`).join('');
 }
 function renderPlay(){
   const rd = curRound(), p = curPlayer(), nx = nextPlayer(), len = S.chain.length;
@@ -899,7 +1036,7 @@ function renderPlay(){
   else rule = `<span class="rl">${rd.icon} ${rd.name}</span><span>${rd.rule}</span>`;
   const badges = [S.frozenNow ? '🙈 Eyes closed this turn' : '', S.forcedNow ? `🌀 Must add “${esc(S.forcedNow)}”` : ''].filter(Boolean);
   return `<div class="play">
-    <aside class="rail panel"><div class="rail-head"><h2>Scoreboard</h2><span class="muted">Tap a card to play it</span></div><ol class="plist">${S.players.map(chip).join('')}</ol></aside>
+    <aside class="rail panel"><div class="rail-head"><h2>Players</h2><span class="muted">Drag ⠿ to change turn order. Tap a card to play it.</span></div><ol class="plist">${S.players.map(chip).join('')}</ol></aside>
     <section class="stage">
       <div class="rulebox">${rule}</div>
       <div class="spot">
@@ -914,7 +1051,7 @@ function renderPlay(){
           <div class="next">${nx ? `Up next: <b>${nx.emoji} ${esc(nx.name)}</b>` : ''}${S.dir<0?' <span title="Reversed">🔄</span>':''}</div>
         </div>
       </div>
-      <div class="meter"><span class="num">${len}</span><span class="lbl">${len===1?'link':'links'}</span><span class="hype">${hypeText(len)}</span><span class="rec">🏆 Team record ${S.record.len}</span></div>
+      <div class="meter"><span class="num">${len}</span><span class="lbl">${len===1?'link':'links'}</span><span class="hype">${hypeText(len)}</span><span class="rec">🏆 Team record ${S.record.len}</span><span class="mascot-wrap"><span class="bubble ${curMood().line?'show':''}" id="bubble">${esc(curMood().line)}</span>${mascot(curMood().m, 'mascot')}</span></div>
       <div class="chainrow" id="chainRow" aria-label="Chain, words hidden">${chainTiles(S.chain)}</div>
       <div class="controls panel">
         <label class="lbl" for="wordIn">${len ? 'They got it all? Type their new word' : 'Type the first word'}</label>
@@ -940,14 +1077,14 @@ function renderPlay(){
 function leaderboard(){
   const ranked = [...S.players].sort((a,b) => b.score - a.score || a.ts - b.ts);
   const max = Math.max(1, ...ranked.map(p => p.score));
-  return `<ol class="board">${ranked.map((p,i) => `<li><span class="rk">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</span><span class="ava" style="--c:${p.color}">${p.emoji}</span><span><span class="nm">${esc(p.name)}</span><div class="bar" style="width:${Math.max(4, p.score/max*100)}%"></div></span><span class="pts">${p.score}</span></li>`).join('')}</ol>`;
+  return `<ol class="board">${ranked.map((p,i) => `<li style="--i:${i}"><span class="rk">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</span><span class="ava" style="--c:${p.color}">${p.emoji}</span><span><span class="nm">${esc(p.name)}</span><div class="bar" style="width:${Math.max(4, p.score/max*100)}%"></div></span><span class="pts">${p.score}</span></li>`).join('')}</ol>`;
 }
 function renderRoundEnd(){
   const rd = curRound(), last = S.ri >= S.roundList.length - 1;
   const nextRd = !last ? ROUNDS.find(r => r.id === S.roundList[S.ri+1]) : null;
   const words = S.lastChain || [];
   return `<section class="center-screen"><div class="panel intro-card">
-    <span class="intro-icon" aria-hidden="true">🎉</span>
+    <div class="hero-mascot">${mascot('happy')}</div>
     <h1 class="intro-title">${rd.name} done!</h1>
     <div class="stats">
       <div class="stat"><b>${S.rstats.longest}</b><span>Longest chain</span></div>
@@ -971,7 +1108,7 @@ function computeAwards(){
   const eagle = best(null, (a,b) => b.catches - a.catches || b.score - a.score);
   const breaker = best(null, (a,b) => b.ts - a.ts || a.score - b.score);
   return [
-    {ic:'🏆', t:'Memory Master', p:top, d:`Highest score: ${top.score} points`},
+    {ic:'🏆', t:'Memory Master', p:top, d:`Highest score: ${top.score} point${Math.abs(top.score)===1?'':'s'}`},
     {ic:'🧠', t:'Iron Brain', p:iron, d:`Fewest strikes: ${iron.ts}`},
     {ic:'🔍', t:'Eagle Ear', p:eagle.catches ? eagle : null, d: eagle.catches ? `Caught ${eagle.catches} mistake${eagle.catches>1?'s':''}` : 'Nobody caught a mistake first. Sharper ears next time!'},
     {ic:'🔗', t:'Chain Breaker', p:breaker.ts ? breaker : null, d: breaker.ts ? `${breaker.ts} snapped chain${breaker.ts>1?'s':''}, and still smiling` : 'Nobody broke a chain. Flawless team!'},
@@ -982,8 +1119,8 @@ function computeAwards(){
 function renderAwards(){
   const ch = byId(S.champion);
   const aw = computeAwards();
-  return `<div class="awards-title"><h1>And the winners are…</h1><p>Thanks for playing Chain Reaction!</p></div>
-  ${ch ? `<section class="panel champ"><span class="ava" style="--c:${ch.color}">${ch.emoji}</span><div><div class="k">👑 Champion</div><h2>${esc(ch.name)}</h2><div class="k">${ch.score} points</div></div></section>` : ''}
+  return `${floaties()}<div class="awards-title">${mascot('happy')}<h1>And the winners are…</h1><p>Thanks for playing Chain Reaction!</p></div>
+  ${ch ? `<section class="panel champ"><span class="champ-ava"><span class="crown" aria-hidden="true">👑</span><span class="ava" style="--c:${ch.color}">${ch.emoji}</span></span><div><div class="k">Champion</div><h2>${esc(ch.name)}</h2><div class="k">${ch.score} point${Math.abs(ch.score)===1?'':'s'}</div></div></section>` : ''}
   <div class="agrid">${aw.map((a,i) => `<article class="panel award ${a.pick?'wide':''}" style="animation-delay:${.15+i*.18}s">
     <span class="ic" aria-hidden="true">${a.ic}</span><h3>${a.t}</h3>
     ${a.rec ? `<div class="win" style="font-size:2rem">${S.record.len} 🔗</div>` : a.p ? `<div class="win"><span class="ava" style="--c:${a.p.color}">${a.p.emoji}</span>${esc(a.p.name)}</div>` : ''}
@@ -1113,6 +1250,135 @@ function setErr(msg, actions = []){
   const e = $('#err'); if (!e) return;
   e.innerHTML = `<span>${msg}</span>`;
   actions.forEach(([label, fn, cls]) => { const b = document.createElement('button'); b.className = 'btn sm '+(cls||''); b.textContent = label; b.onclick = fn; e.appendChild(b); });
+}
+
+/* ================= mascot, sparkles, drag & drop ================= */
+const OK_LINES = ['Nice one!','Smooth!','Big brain! 🧠','Keep it rolling!','Chain gang! 🔗','Too easy!','Memory master!','On fire! 🔥'];
+const STRIKE_LINES = ['Ouch! 💥','Snap!','So close!','Shake it off!','Oof!','Next time!'];
+let MOOD = {m:'idle', line:'', until:0};
+function mascot(mood = 'idle', id = ''){
+  return `<span class="mascot" ${id ? `id="${id}"` : ''} data-mood="${mood}" aria-hidden="true"><svg viewBox="0 0 124 100" focusable="false">
+    <g class="m-body">
+      <rect class="m-back-o" x="60" y="26" width="56" height="40" rx="20"/><rect class="m-back" x="60" y="26" width="56" height="40" rx="20"/>
+      <rect class="m-front" x="6" y="18" width="80" height="64" rx="32"/>
+      <ellipse class="m-eye" cx="34" cy="45" rx="6" ry="7.5"/><ellipse class="m-eye" cx="58" cy="45" rx="6" ry="7.5"/>
+      <circle class="m-shine" cx="36" cy="42" r="2"/><circle class="m-shine" cx="60" cy="42" r="2"/>
+      <circle class="m-cheek" cx="22" cy="59" r="5.5"/><circle class="m-cheek" cx="70" cy="59" r="5.5"/>
+      <path class="m-mouth m-smile" d="M37 59 Q46 68 55 59"/>
+      <path class="m-mouth m-grin" d="M34 57 Q46 76 58 57 Z"/>
+      <ellipse class="m-mouth m-wow" cx="46" cy="63" rx="5.5" ry="6.5"/>
+      <path class="m-mouth m-sad" d="M38 66 Q46 57 54 66"/>
+    </g></svg></span>`;
+}
+function curMood(){ return Date.now() < MOOD.until ? MOOD : {m:'idle', line:''}; }
+function cheer(m, line = '', ms = 1700){
+  MOOD = {m, line, until: Date.now() + ms};
+  const el = $('#mascot'); if (el) el.dataset.mood = m;
+  const b = $('#bubble'); if (b){ b.textContent = line; b.classList.toggle('show', !!line); }
+  clearTimeout(cheer.t);
+  cheer.t = setTimeout(() => { const e = $('#mascot'); if (e) e.dataset.mood = 'idle'; $('#bubble')?.classList.remove('show'); }, ms);
+}
+function floaties(){
+  const icons = ['🔗','✨','⭐','🎤','🏆','💬','🔗','✨','🎉','⭐','🧠','🔥'];
+  return `<div class="floaties" aria-hidden="true">${icons.map((e,i) => `<span style="--x:${(i*8.3+3).toFixed(1)}%;--d:${9+(i%5)*2.2}s;--del:${(-i*1.7).toFixed(1)}s">${e}</span>`).join('')}</div>`;
+}
+function sparkle(el, n = 12){
+  if (RM || !el) return;
+  const r = el.getBoundingClientRect(), cx = r.left + r.width/2, cy = r.top + r.height/2;
+  const cols = ['#FFD23F','#FF4F9A','#2FD38A','#4FC3FF','#FFFFFF'];
+  for (let i = 0; i < n; i++){
+    const s = document.createElement('span'); s.className = 'spark';
+    s.textContent = rand(['✦','★','✧','●']);
+    const a = i / n * Math.PI * 2, d = 46 + Math.random()*40;
+    s.style.left = cx + 'px'; s.style.top = cy + 'px'; s.style.color = rand(cols);
+    s.style.setProperty('--tx', (Math.cos(a)*d).toFixed(1) + 'px'); s.style.setProperty('--ty', (Math.sin(a)*d).toFixed(1) + 'px');
+    document.body.appendChild(s); setTimeout(() => s.remove(), 850);
+  }
+}
+function fxStrike(){
+  if (RM) return;
+  const a = $('#app'); a.classList.remove('shake'); void a.offsetWidth; a.classList.add('shake');
+  setTimeout(() => a.classList.remove('shake'), 600);
+  const v = document.createElement('div'); v.className = 'vignette'; document.body.appendChild(v); setTimeout(() => v.remove(), 950);
+}
+const prevScore = {};
+function scoreClass(p){
+  const prev = prevScore[p.id]; prevScore[p.id] = p.score;
+  if (prev === undefined || prev === p.score) return '';
+  return p.score > prev ? 'up' : 'down';
+}
+const grip = name => `<button type="button" class="grip" aria-label="Move ${esc(name)}. Drag, or use the arrow keys."></button>`;
+
+let drag = null;
+document.addEventListener('pointerdown', e => {
+  const g = e.target.closest && e.target.closest('.grip');
+  if (!g || (e.pointerType === 'mouse' && e.button !== 0)) return;
+  const item = g.closest('[data-pid]'), list = item && item.parentElement;
+  if (!item || !list) return;
+  e.preventDefault();
+  const r = item.getBoundingClientRect();
+  const ph = document.createElement(item.tagName);
+  ph.className = 'drop-ph'; ph.style.height = r.height + 'px';
+  list.insertBefore(ph, item);
+  const oldStyle = item.getAttribute('style');
+  Object.assign(item.style, {position:'fixed', left:r.left+'px', top:r.top+'px', width:r.width+'px', height:r.height+'px', margin:'0'});
+  item.classList.add('dragging'); document.body.classList.add('is-dragging');
+  drag = {item, list, ph, oldStyle, dx:e.clientX - r.left, dy:e.clientY - r.top, grid:list.classList.contains('roster'), pid:item.dataset.pid};
+  try { g.setPointerCapture(e.pointerId); } catch(_){}
+  SFX.spin();
+});
+document.addEventListener('pointermove', e => {
+  if (!drag) return;
+  drag.item.style.left = (e.clientX - drag.dx) + 'px';
+  drag.item.style.top = (e.clientY - drag.dy) + 'px';
+  for (const s of drag.list.children){
+    if (s === drag.item || s === drag.ph || !s.dataset.pid) continue;
+    const b = s.getBoundingClientRect();
+    if (e.clientX < b.left || e.clientX > b.right || e.clientY < b.top || e.clientY > b.bottom) continue;
+    const before = drag.grid ? e.clientX < b.left + b.width/2 : e.clientY < b.top + b.height/2;
+    const ref = before ? s : s.nextSibling;
+    if (ref !== drag.ph){ drag.list.insertBefore(drag.ph, ref); SFX.spin(); }
+    break;
+  }
+  if (e.clientY < 60) window.scrollBy(0, -14); else if (e.clientY > innerHeight - 60) window.scrollBy(0, 14);
+});
+function endDrag(){
+  if (!drag) return;
+  const {item, list, ph, oldStyle, pid} = drag;
+  drag = null;
+  if (ph.parentNode === list) list.insertBefore(item, ph);
+  ph.remove();
+  if (oldStyle === null) item.removeAttribute('style'); else item.setAttribute('style', oldStyle);
+  item.classList.remove('dragging'); document.body.classList.remove('is-dragging');
+  const order = [...list.children].map(c => c.dataset.pid).filter(Boolean);
+  reorderPlayers(order, pid, false);
+}
+document.addEventListener('pointerup', endDrag);
+document.addEventListener('pointercancel', endDrag);
+document.addEventListener('keydown', e => {
+  const g = e.target.closest && e.target.closest('.grip'); if (!g) return;
+  const d = {ArrowUp:-1, ArrowLeft:-1, ArrowDown:1, ArrowRight:1}[e.key]; if (!d) return;
+  e.preventDefault();
+  const pid = g.closest('[data-pid]')?.dataset.pid; const ids = S.players.map(p => p.id);
+  const i = ids.indexOf(pid), j = i + d; if (i < 0 || j < 0 || j >= ids.length) return;
+  [ids[i], ids[j]] = [ids[j], ids[i]];
+  reorderPlayers(ids, pid, true);
+});
+function reorderPlayers(order, focusPid, refocus){
+  if (order.join('|') === S.players.map(p => p.id).join('|')) return;
+  if (S.phase !== 'lobby') snapshot();
+  const curId = S.phase === 'play' ? curPlayer()?.id : null;
+  const map = new Map(S.players.map(p => [p.id, p]));
+  const next = order.map(id => map.get(id)).filter(Boolean);
+  S.players.forEach(p => { if (!next.includes(p)) next.push(p); });
+  S.players = next;
+  if (curId) S.cur = Math.max(0, S.players.findIndex(p => p.id === curId));
+  save(); SFX.card();
+  if (S.phase === 'lobby') softLobby();
+  else if (S.phase === 'play' && !modalOpen) render();
+  else softRail();
+  const el = document.querySelector(`[data-pid="${CSS.escape(focusPid)}"]`);
+  if (el){ el.classList.remove('joined'); void el.offsetWidth; el.classList.add('joined'); if (refocus) el.querySelector('.grip')?.focus(); }
 }
 
 /* ================= actions ================= */
@@ -1427,7 +1693,7 @@ function addLate(pid, name, emoji){
   save(); if (modalOpen) softRail(); else render();
   toast(`${esc(name)} is in! They’ll take turns from the next lap.`);
 }
-function softRail(){ const ol = document.querySelector('.rail .plist'); if (ol) ol.innerHTML = S.players.map(chip).join(''); }
+function softRail(){ if (drag) return; const ol = document.querySelector('.rail .plist'); if (ol) ol.innerHTML = S.players.map(chip).join(''); }
 function onBuzz(pid){
   const p = byId(pid); if (!p || S.phase !== 'play') return;
   SFX.buzz();
@@ -1522,7 +1788,7 @@ function renderPlayer(){
   }
   if (H.ph === 'lobby'){
     return `<div class="phone">
-      <section class="panel pad status soon"><span class="ava" style="--c:${esc(me.color)}">${esc(me.emoji)}</span><div class="big">You’re in! 🎉</div><p><b>${esc(me.name)}</b>, the host will start the game soon. Keep this screen open.</p></section>
+      <section class="panel pad status soon">${mascot('happy')}<div class="big">You’re in! 🎉</div><span class="ava" style="--c:${esc(me.color)}">${esc(me.emoji)}</span><p><b>${esc(me.name)}</b>, the host will start the game soon. Keep this screen open.</p></section>
       ${roomList}${leave}</div>`;
   }
   const rank = ranked.findIndex(p => p.id === me.id) + 1;
